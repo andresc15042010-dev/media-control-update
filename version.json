@@ -1,6 +1,6 @@
 {
-  "version": "2.2.5",
+  "version": "2.2.6",
   "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Correcciones v2.2.5: Búsqueda directa versículos con Enter, miniaturas de videos en fondos con liberación de memoria, tipografía y contorno nítido sin huecos, control remoto con AT/NT y buscador, resolución exacta de capítulos bíblicos (Tito, etc.) y scroll completo hasta Apocalipsis."
+  "notes": "Actualización v2.2.6: Control Remoto con miniaturas de fondo, saltos rápidos de estrofas y versículo directo, miniaturas de video reparadas, áreas de notas ampliadas y búsqueda bíblica mejorada."
 }
