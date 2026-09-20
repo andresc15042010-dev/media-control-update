@@ -1,6 +1,6 @@
 {
-  "version": "2.2.1",
+  "version": "2.2.2",
   "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Media Control v2.2.1: Zoom estilo navegador (Ctrl +, Ctrl -, Ctrl 0, Ctrl+Rueda) con ajuste perfecto a pantalla en 1366x768, reubicacion de switch de auto-proyeccion a cabecera de versiculos, aumento y sincronizacion en vivo de contorno de letras (hasta 16px), correcion ortografica en mayusculas/minusculas para tildes (á,é,í,ó,ú), ñ y dieresis (ü), boton Aa compacto en una sola linea y aviso limpio en copias de seguridad."
+  "notes": "Actualizacion v2.2.2: Margenes de pantalla de respeto, control de tamano de letra de proyeccion, tipografia ampliada de la app y Copias de Seguridad integradas."
 }
