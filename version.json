@@ -1,6 +1,6 @@
 {
-  "version": "2.2.3",
+  "version": "2.2.4",
   "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Actualizacion v2.2.3: Barra superior redisenada sin scrollbar, logo y version apilados, iconos ampliados, control de zoom minimalista sin letra A y paquete completo de micro-animaciones dedicadas."
+  "notes": "Control Remoto Global por Internet (Supabase Realtime 4G/5G sin depender de Wi-Fi), Rediseño de Cabecera compacta con marca apilada (Media / Control / v2.2.4) sin desbordamientos en pantallas 1366x768, y Sistema de Copias de Seguridad de Base de Datos totalmente reparado con explicaciones claras."
 }
