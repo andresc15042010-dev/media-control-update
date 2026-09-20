@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#070d1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Media Control - Control Remoto Pro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: #070d1e;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        /* Navegación por Pestañas */
+        .tabs-bar {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.35rem;
+            border-radius: 0.9rem;
+            margin: 0.6rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 0.55rem 0.25rem;
+            border: none;
+            border-radius: 0.65rem;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Contenido de Pestañas */
+        .tab-pane {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .tab-pane.active {
+            display: flex;
+        }
+
+        /* Tarjeta de Monitor en Vivo */
+        .preview-card {
+            padding: 0.85rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 85px;
+            max-height: 22vh;
+            overflow: hidden;
+            text-align: center;
+            border-color: rgba(99, 102, 241, 0.3);
+            flex-shrink: 0;
+        }
+        .preview-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #818cf8;
+            margin-bottom: 0.25rem;
+        }
+        .preview-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 0.35rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .preview-text {
+            font-size: 1.25rem;
+            line-height: 1.4;
+            color: #ffffff;
+            font-weight: 700;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Botones Táctiles */
+        .btn-touch {
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-touch:active {
+            transform: scale(0.96);
+            filter: brightness(1.2);
+        }
+
+        .controls-main {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+        .btn-next {
+            min-height: 56px;
+            max-height: 70px;
+            flex: 1;
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+            border-radius: 1rem;
+            font-size: 1.15rem;
+            box-shadow: 0 6px 18px -4px rgba(79, 70, 229, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        .btn-prev {
+            min-height: 44px;
+            max-height: 54px;
+            flex: 0.8;
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Botones de acción rápida */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.65rem;
+            flex-shrink: 0;
+        }
+        .btn-mini {
+            padding: 0.7rem 0.25rem;
+            border-radius: 0.9rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 41, 59, 0.85);
+            color: #cbd5e1;
+        }
+        .btn-mini svg { width: 18px; height: 18px; }
+        .btn-mini-danger {
+            background: rgba(225, 29, 72, 0.2);
+            color: #fb7185;
+            border-color: rgba(225, 29, 72, 0.4);
+        }
+        .btn-mini-blackout {
+            background: rgba(15, 23, 42, 0.9);
+            color: #e2e8f0;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Barra de Control de Fondos */
+        .bg-controls-bar {
+            display: flex;
+            gap: 0.45rem;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn-bg-nav {
+            flex: 1;
+            padding: 0.65rem 0.4rem;
+            border-radius: 0.85rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: rgba(30, 41, 59, 0.85);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+        .btn-bg-gallery {
+            flex: 1.2;
+            padding: 0.65rem 0.4rem;
+            border-radius: 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        /* Carrusel / Barra de selección directa de estrofas */
+        .stanzas-quick-bar {
+            display: none;
+            overflow-x: auto;
+            white-space: nowrap;
+            gap: 0.4rem;
+            padding: 0.4rem 0.2rem;
+            margin-top: 0.4rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .stanza-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 36px;
+            padding: 0 0.6rem;
+            border-radius: 0.75rem;
+            font-size: 0.78rem;
+            font-weight: 800;
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .stanza-chip.active {
+            background: #8b5cf6;
+            color: white;
+            border-color: #a78bfa;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+        .stanza-chip:active {
+            transform: scale(0.92);
+        }
+
+        /* Barra de entrada directa de versículo */
+        .direct-verse-container {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn-direct-go {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0 1rem;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Modal de Fondos */
+        .modal-bg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.75rem;
+            max-height: 65vh;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+        .bg-card-item {
+            aspect-ratio: 16/9;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            position: relative;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .bg-card-item:hover, .bg-card-item:active {
+            transform: scale(1.03);
+            border-color: #818cf8;
+        }
+        .bg-card-item img, .bg-card-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .bg-card-badge {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.65);
+            font-size: 0.6rem;
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.4rem;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Buscador y Listas */
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.85rem;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .list-scrollable {
+            flex: 1;
+            overflow-y: auto;
+            border-radius: 1rem;
+            padding: 0.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .list-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.65rem 0.85rem;
+            border-radius: 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .list-item:active {
+            background: rgba(79, 70, 229, 0.4);
+            border-color: #6366f1;
+        }
+
+        /* Grid Bíblico y Agrupación */
+        .bible-scroll-area {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 5.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .bible-section-header {
+            grid-column: 1 / -1;
+            background: rgba(30, 41, 59, 0.95);
+            border-left: 3px solid #6366f1;
+            padding: 0.45rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 0.4rem;
+            margin-bottom: 0.1rem;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .bible-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
+            padding: 0.2rem;
+        }
+        .bible-grid-grouped {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.4rem;
+            padding: 0.2rem;
+        }
+        .grid-chip {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 0.65rem 0.25rem;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .grid-chip:active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .footer-info {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #64748b;
+            padding-top: 0.4rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <div class="pulse-dot"></div>
+            <span>Media Control Pro</span>
+        </div>
+        <div style="font-size:0.7rem; font-weight:700; color:#10b981; background:rgba(16,185,129,0.15); padding:0.2rem 0.5rem; border-radius:999px;">
+            Conectado
+        </div>
+    </header>
+
+    <!-- Barra de Pestañas -->
+    <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('control')">Control</button>
+        <button class="tab-btn" onclick="switchTab('biblia')">Biblia</button>
+        <button class="tab-btn" onclick="switchTab('canciones')">Canciones</button>
+    </div>
+
+    <!-- Monitor en Vivo (Visible en todas las pestañas) -->
+    <div class="glass-card preview-card" id="live-card">
+        <div class="preview-label">En Pantalla</div>
+        <div class="preview-title" id="live-title">Media Control Pro</div>
+        <div class="preview-text" id="live-text">Proyector listo</div>
+    </div>
+
+    <!-- Barra de Selección Rápida de Estrofas (1, 2, 3, 4...) -->
+    <div id="stanzas-quick-bar" class="stanzas-quick-bar"></div>
+
+    <!-- PESTAÑA 1: CONTROL RÁPIDO -->
+    <div id="tab-control" class="tab-pane active">
+        <div class="controls-main">
+            <button id="btn-next" class="btn-touch btn-next">
+                <span>Siguiente</span>
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <button id="btn-prev" class="btn-touch btn-prev">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                <span>Anterior</span>
+            </button>
+        </div>
+
+        <!-- Barra de Control de Fondos -->
+        <div class="bg-controls-bar">
+            <button id="btn-prev-bg" class="btn-touch btn-bg-nav">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                <span>Fondo Ant.</span>
+            </button>
+            <button id="btn-open-bg-modal" class="btn-touch btn-bg-gallery" onclick="abrirModalFondos()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>Fondos</span>
+            </button>
+            <button id="btn-next-bg" class="btn-touch btn-bg-nav">
+                <span>Fondo Sig.</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+
+        <div class="quick-grid">
+            <button id="btn-clear" class="btn-touch btn-mini btn-mini-danger">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <span>Limpiar</span>
+            </button>
+            <button id="btn-black" class="btn-touch btn-mini btn-mini-blackout">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                <span>Negro</span>
+            </button>
+            <button id="btn-zoom-in" class="btn-touch btn-mini">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Letra +</span>
+            </button>
+            <button id="btn-zoom-out" class="btn-touch btn-mini">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                <span>Letra -</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 2: BIBLIA -->
+    <div id="tab-biblia" class="tab-pane">
+        <!-- Entrada directa de versículo -->
+        <div class="direct-verse-container">
+            <input type="text" id="bible-direct-input" class="search-input" style="background:rgba(15,23,42,0.9); border:1px solid rgba(99,102,241,0.3); border-radius:0.75rem; padding:0.55rem 0.75rem; flex:1;" placeholder="Ir directo (ej: 20 o 15:20)..." onkeydown="if(event.key==='Enter') saltarVersiculoDirectoRemoto()">
+            <button class="btn-direct-go" onclick="saltarVersiculoDirectoRemoto()">Ir</button>
+        </div>
+
+        <div class="search-box" id="bible-search-box">
+            <svg width="16" height="16" fill="none" stroke="#94a3b8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" id="bible-search-input" class="search-input" placeholder="Buscar libro (ej. Tito, Juan)..." oninput="filtrarLibrosRemoto(this.value)">
+        </div>
+
+        <div id="bible-step-nav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; font-size:0.75rem; font-weight:700; color:#818cf8;">
+            <span id="bible-step-title">1. Selecciona un Libro</span>
+            <button onclick="resetBibleSelector()" style="background:transparent; border:none; color:#f43f5e; font-size:0.75rem; font-weight:bold; cursor:pointer;" id="btn-bible-back" class="hidden">« Volver</button>
+        </div>
+
+        <div id="bible-scroll-area" class="bible-scroll-area">
+            <div id="bible-container" class="bible-grid-grouped">
+                <!-- Secciones AT / NT / Capítulos / Versículos dinámicos -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 3: CANCIONES -->
+    <div id="tab-canciones" class="tab-pane">
+        <div class="search-box">
+            <svg width="16" height="16" fill="none" stroke="#94a3b8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar por título..." oninput="filtrarCancionesRemoto(this.value)">
+        </div>
+        <div id="songs-list-container" class="list-scrollable">
+            <div style="text-align:center; color:#64748b; padding:1.5rem; font-size:0.8rem;">Cargando catálogo...</div>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        Control Remoto Móvil Oficial &bull; Media Control Pro
+    </div>
+
+    <!-- Modal de Configuración de PIN de Iglesia -->
+    <div id="modal-pin" style="display:none; position:fixed; inset:0; background:rgba(7,13,30,0.92); z-index:999; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; backdrop-filter:blur(10px);">
+        <div class="glass-card" style="width:100%; max-width:320px; padding:1.5rem; text-align:center;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">📱</div>
+            <h3 style="font-size:1rem; font-weight:800; margin-bottom:0.25rem;">Conectar a la Iglesia</h3>
+            <p style="font-size:0.75rem; color:#94a3b8; margin-bottom:1rem;">Ingresa el PIN de tu templo que aparece en la pantalla del computador (ej. MC7492):</p>
+            <input type="text" id="input-church-pin" placeholder="PIN de Iglesia" style="width:100%; background:rgba(15,23,42,0.9); border:1px solid #4f46e5; border-radius:0.75rem; padding:0.75rem; text-align:center; font-size:1.2rem; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:2px; margin-bottom:1rem; outline:none;">
+            <button onclick="guardarPinYConectar()" style="width:100%; background:#4f46e5; color:white; border:none; padding:0.75rem; border-radius:0.75rem; font-weight:700; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(79,70,229,0.4);">
+                Conectar al Computador
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Selección de Fondo para el Móvil -->
+    <div id="modal-fondos" style="display:none; position:fixed; inset:0; background:rgba(7,13,30,0.96); z-index:999; flex-direction:column; padding:1rem; backdrop-filter:blur(14px);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-shrink:0;">
+            <h3 style="font-size:1rem; font-weight:800; color:#e2e8f0; display:flex; align-items:center; gap:0.4rem;">
+                <span>🖼</span> Galería de Fondos
+            </h3>
+            <button onclick="cerrarModalFondos()" style="background:rgba(255,255,255,0.12); border:none; color:white; border-radius:0.5rem; padding:0.4rem 0.8rem; font-weight:bold; font-size:0.8rem; cursor:pointer;">✕ Cerrar</button>
+        </div>
+        <div id="modal-bg-grid" class="modal-bg-grid">
+            <div style="grid-column:1/-1; text-align:center; color:#64748b; padding:2rem;">Cargando fondos...</div>
+        </div>
+    </div>
+
+    <script src="js/supabase-remote.js"></script>
+    <script>
+        let allSongsCache = [];
+        let bibleBooksCache = [];
+        let selectedBibleBook = null;
+        let selectedBibleChapter = null;
+        let globalSupabase = null;
+        let churchPin = '';
+        let backgroundsCache = [];
+        let currentSongStanzasCount = 0;
+        let activeStanzaIndex = 0;
+
+        function saltarVersiculoDirectoRemoto() {
+            const input = document.getElementById('bible-direct-input');
+            const val = (input ? input.value : '').trim();
+            if (!val) return;
+            sendAction({ action: 'direct_verse', query: val });
+            input.value = '';
+            switchTab('control');
+        }
+
+        async function abrirModalFondos() {
+            const modal = document.getElementById('modal-fondos');
+            if (modal) modal.style.display = 'flex';
+            if (backgroundsCache.length === 0) {
+                await cargarFondosRemoto();
+            } else {
+                renderFondosModal();
+            }
+        }
+
+        function cerrarModalFondos() {
+            const modal = document.getElementById('modal-fondos');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function cargarFondosRemoto() {
+            try {
+                const res = await fetch('/api/remote/backgrounds');
+                if (res.ok) {
+                    const data = await res.json();
+                    backgroundsCache = data.backgrounds || [];
+                    renderFondosModal();
+                }
+            } catch(e) {
+                console.error("Error cargando fondos:", e);
+            }
+        }
+
+        function renderFondosModal() {
+            const grid = document.getElementById('modal-bg-grid');
+            if (!grid) return;
+            if (backgroundsCache.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#64748b; padding:2rem;">No se encontraron fondos en fondos/</div>';
+                return;
+            }
+            grid.innerHTML = '';
+            backgroundsCache.forEach(bg => {
+                const card = document.createElement('div');
+                card.className = 'bg-card-item';
+                if (bg.isVideo) {
+                    card.innerHTML = `
+                        <video src="${bg.url}" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+                        <span class="bg-card-badge">🎥 ${bg.name}</span>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <img src="${bg.url}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+                        <span class="bg-card-badge">🖼 ${bg.name}</span>
+                    `;
+                }
+                card.onclick = () => {
+                    sendAction({ action: 'select_bg', bg: bg.url });
+                    cerrarModalFondos();
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function renderQuickStanzas(count, activeIdx = 1) {
+            currentSongStanzasCount = count;
+            activeStanzaIndex = activeIdx;
+            const bar = document.getElementById('stanzas-quick-bar');
+            if (!bar) return;
+            if (!count || count <= 1) {
+                bar.style.display = 'none';
+                return;
+            }
+            bar.style.display = 'flex';
+            bar.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const chip = document.createElement('button');
+                chip.className = `stanza-chip ${i === activeIdx ? 'active' : ''}`;
+                chip.innerText = `${i}`;
+                chip.onclick = () => {
+                    sendAction({ action: 'project_stanza', index: i });
+                    activeStanzaIndex = i;
+                    document.querySelectorAll('.stanza-chip').forEach((c, idx) => {
+                        c.classList.toggle('active', idx + 1 === i);
+                    });
+                };
+                bar.appendChild(chip);
+            }
+        }
+
+        function initGlobalRemote() {
+            const urlParams = new URLSearchParams(window.location.search);
+            churchPin = urlParams.get('pin') || localStorage.getItem('mc_church_pin') || '';
+
+            if (!churchPin) {
+                // Si estamos en localhost o IP directa, intentar leer PIN o conectar local
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || /^192\.168\./.test(window.location.hostname)) {
+                    churchPin = 'LOCAL';
+                } else {
+                    mostrarModalPin();
+                    return;
+                }
+            }
+
+            actualizarBadgePin(churchPin, 'Conectando...');
+
+            if (typeof SupabaseRealtimeRemote !== 'undefined') {
+                globalSupabase = new SupabaseRealtimeRemote({ pin: churchPin });
+                
+                globalSupabase.onStateChange((state, info) => {
+                    const badge = document.getElementById('conn-status-badge');
+                    const text = document.getElementById('pin-badge-text');
+                    const dot = document.getElementById('pulse-dot');
+                    if (state === 'connected') {
+                        if (badge) {
+                            badge.style.color = '#10b981';
+                            badge.style.background = 'rgba(16,185,129,0.15)';
+                        }
+                        if (dot) dot.style.background = '#10b981';
+                        if (text) text.innerText = `● En Línea (${info.pin || churchPin})`;
+                    } else if (state === 'connecting') {
+                        if (badge) {
+                            badge.style.color = '#fbbf24';
+                            badge.style.background = 'rgba(251,191,36,0.15)';
+                        }
+                        if (dot) dot.style.background = '#fbbf24';
+                        if (text) text.innerText = 'Conectando...';
+                    } else {
+                        if (badge) {
+                            badge.style.color = '#f43f5e';
+                            badge.style.background = 'rgba(244,63,94,0.15)';
+                        }
+                        if (dot) dot.style.background = '#f43f5e';
+                        if (text) text.innerText = 'Reconectando...';
+                    }
+                });
+
+                globalSupabase.onStatus((liveStatus) => {
+                    if (liveStatus) renderStatus(liveStatus);
+                });
+
+                globalSupabase.connect();
+            }
+        }
+
+        function mostrarModalPin() {
+            const modal = document.getElementById('modal-pin');
+            if (modal) {
+                modal.style.display = 'flex';
+                const input = document.getElementById('input-church-pin');
+                if (input) {
+                    input.value = churchPin !== 'LOCAL' ? churchPin : '';
+                    setTimeout(() => input.focus(), 100);
+                }
+            }
+        }
+
+        function cambiarPinIglesia() {
+            mostrarModalPin();
+        }
+
+        function guardarPinYConectar() {
+            const input = document.getElementById('input-church-pin');
+            const pinVal = (input ? input.value : '').trim().toUpperCase();
+            if (!pinVal) {
+                alert('Por favor ingresa el PIN de tu templo.');
+                return;
+            }
+            churchPin = pinVal;
+            localStorage.setItem('mc_church_pin', churchPin);
+            const modal = document.getElementById('modal-pin');
+            if (modal) modal.style.display = 'none';
+
+            if (globalSupabase) {
+                globalSupabase.setPin(churchPin);
+            } else {
+                initGlobalRemote();
+            }
+        }
+
+        function actualizarBadgePin(pin, statusMsg) {
+            const text = document.getElementById('pin-badge-text');
+            if (text) text.innerText = statusMsg || `● ${pin}`;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+            const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.innerText.toLowerCase().includes(tabId.toLowerCase()));
+            if (targetBtn) targetBtn.classList.add('active');
+
+            const targetPane = document.getElementById('tab-' + tabId);
+            if (targetPane) targetPane.classList.add('active');
+
+            if (tabId === 'canciones' && allSongsCache.length === 0) {
+                cargarCatalogoCanciones();
+            }
+            if (tabId === 'biblia' && bibleBooksCache.length === 0) {
+                cargarLibrosBiblicos();
+            }
+        }
+
+        async function sendAction(payload) {
+            try {
+                if (navigator.vibrate) navigator.vibrate(30);
+                const body = (typeof payload === 'string') ? { action: payload } : payload;
+
+                // 1. Envío prioritario global vía Supabase Realtime (Internet 4G/5G / Sin Wi-Fi)
+                let sentViaCloud = false;
+                if (globalSupabase && globalSupabase.isConnected) {
+                    sentViaCloud = globalSupabase.sendCommand(body);
+                }
+
+                // 2. Envío paralelo local vía Wi-Fi HTTP si está disponible en la misma red
+                try {
+                    fetch('/api/remote/action', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }).then(r => {
+                        if (r.ok) setTimeout(fetchLiveStatus, 150);
+                    }).catch(() => {});
+                } catch(e) {}
+
+                // Si no está conectado a Supabase y no es red local, reintentar conexión
+                if (!sentViaCloud && (!globalSupabase || !globalSupabase.isConnected)) {
+                    if (globalSupabase) globalSupabase.connect();
+                }
+            } catch (err) {
+                console.error('Error al enviar acción:', err);
+            }
+        }
+
+        function bindTouch(btnId, actionName) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            let handled = false;
+
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handled = true;
+                sendAction(actionName);
+            }, { passive: false });
+
+            btn.addEventListener('click', () => {
+                if (handled) { handled = false; return; }
+                sendAction(actionName);
+            });
+        }
+
+        async function fetchLiveStatus() {
+            try {
+                const res = await fetch('/api/remote/status');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.status) renderStatus(data.status);
+                }
+            } catch(e) {}
+        }
+
+        function renderStatus(st) {
+            const titleEl = document.getElementById('live-title');
+            const textEl = document.getElementById('live-text');
+            const card = document.getElementById('live-card');
+
+            if (st.isBlack) {
+                if (titleEl) titleEl.innerText = 'Pantalla en Negro';
+                if (textEl) textEl.innerHTML = '<span style="color:#f43f5e; font-weight:bold;">Proyección en pausa (Blackout)</span>';
+                if (card) {
+                    card.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+                    card.style.backgroundImage = 'none';
+                }
+                return;
+            }
+
+            if (card) {
+                card.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+                if (st.bg) {
+                    card.style.backgroundImage = `linear-gradient(rgba(10, 16, 35, 0.8), rgba(10, 16, 35, 0.9)), url('${st.bg}')`;
+                    card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                } else {
+                    card.style.backgroundImage = 'none';
+                }
+            }
+
+            if (st.title || st.verse) {
+                if (titleEl) titleEl.innerText = st.title || st.verse || 'Proyección Activa';
+            } else {
+                if (titleEl) titleEl.innerText = 'Media Control Pro';
+            }
+
+            if (st.text && st.text.trim()) {
+                if (textEl) textEl.innerText = st.text.trim();
+            } else {
+                if (textEl) textEl.innerHTML = '<span style="color:#64748b;">Proyector listo</span>';
+            }
+
+            const activeIdx = parseInt(st.verseIndex || st.stanzaIndex || 0);
+            const total = parseInt(st.totalVerses || st.totalStanzas || currentSongStanzasCount || 0);
+            if (total > 1) {
+                renderQuickStanzas(total, activeIdx || 1);
+            }
+        }
+
+        // --- CATÁLOGO CANÓNICO DE LOS 66 LIBROS CON CONTEO EXACTO DE CAPÍTULOS ---
+        const BIBLE_METADATA = [
+            // Antiguo Testamento (39 libros)
+            { id: 1, name: "Génesis", t: "AT", chapters: 50 },
+            { id: 2, name: "Éxodo", t: "AT", chapters: 40 },
+            { id: 3, name: "Levítico", t: "AT", chapters: 27 },
+            { id: 4, name: "Números", t: "AT", chapters: 36 },
+            { id: 5, name: "Deuteronomio", t: "AT", chapters: 34 },
+            { id: 6, name: "Josué", t: "AT", chapters: 24 },
+            { id: 7, name: "Jueces", t: "AT", chapters: 21 },
+            { id: 8, name: "Rut", t: "AT", chapters: 4 },
+            { id: 9, name: "1 Samuel", t: "AT", chapters: 31 },
+            { id: 10, name: "2 Samuel", t: "AT", chapters: 24 },
+            { id: 11, name: "1 Reyes", t: "AT", chapters: 22 },
+            { id: 12, name: "2 Reyes", t: "AT", chapters: 25 },
+            { id: 13, name: "1 Crónicas", t: "AT", chapters: 29 },
+            { id: 14, name: "2 Crónicas", t: "AT", chapters: 36 },
+            { id: 15, name: "Esdras", t: "AT", chapters: 10 },
+            { id: 16, name: "Nehemías", t: "AT", chapters: 13 },
+            { id: 17, name: "Ester", t: "AT", chapters: 10 },
+            { id: 18, name: "Job", t: "AT", chapters: 42 },
+            { id: 19, name: "Salmos", t: "AT", chapters: 150 },
+            { id: 20, name: "Proverbios", t: "AT", chapters: 31 },
+            { id: 21, name: "Eclesiastés", t: "AT", chapters: 12 },
+            { id: 22, name: "Cantares", t: "AT", chapters: 8 },
+            { id: 23, name: "Isaías", t: "AT", chapters: 66 },
+            { id: 24, name: "Jeremías", t: "AT", chapters: 52 },
+            { id: 25, name: "Lamentaciones", t: "AT", chapters: 5 },
+            { id: 26, name: "Ezequiel", t: "AT", chapters: 48 },
+            { id: 27, name: "Daniel", t: "AT", chapters: 12 },
+            { id: 28, name: "Oseas", t: "AT", chapters: 14 },
+            { id: 29, name: "Joel", t: "AT", chapters: 3 },
+            { id: 30, name: "Amós", t: "AT", chapters: 9 },
+            { id: 31, name: "Abdías", t: "AT", chapters: 1 },
+            { id: 32, name: "Jonás", t: "AT", chapters: 4 },
+            { id: 33, name: "Miqueas", t: "AT", chapters: 7 },
+            { id: 34, name: "Nahúm", t: "AT", chapters: 3 },
+            { id: 35, name: "Habacuc", t: "AT", chapters: 3 },
+            { id: 36, name: "Sofonías", t: "AT", chapters: 3 },
+            { id: 37, name: "Hageo", t: "AT", chapters: 2 },
+            { id: 38, name: "Zacarías", t: "AT", chapters: 14 },
+            { id: 39, name: "Malaquías", t: "AT", chapters: 4 },
+            // Nuevo Testamento (27 libros)
+            { id: 40, name: "Mateo", t: "NT", chapters: 28 },
+            { id: 41, name: "Marcos", t: "NT", chapters: 16 },
+            { id: 42, name: "Lucas", t: "NT", chapters: 24 },
+            { id: 43, name: "Juan", t: "NT", chapters: 21 },
+            { id: 44, name: "Hechos", t: "NT", chapters: 28 },
+            { id: 45, name: "Romanos", t: "NT", chapters: 16 },
+            { id: 46, name: "1 Corintios", t: "NT", chapters: 16 },
+            { id: 47, name: "2 Corintios", t: "NT", chapters: 13 },
+            { id: 48, name: "Gálatas", t: "NT", chapters: 6 },
+            { id: 49, name: "Efesios", t: "NT", chapters: 6 },
+            { id: 50, name: "Filipenses", t: "NT", chapters: 4 },
+            { id: 51, name: "Colosenses", t: "NT", chapters: 4 },
+            { id: 52, name: "1 Tesalonicenses", t: "NT", chapters: 5 },
+            { id: 53, name: "2 Tesalonicenses", t: "NT", chapters: 3 },
+            { id: 54, name: "1 Timoteo", t: "NT", chapters: 6 },
+            { id: 55, name: "2 Timoteo", t: "NT", chapters: 4 },
+            { id: 56, name: "Tito", t: "NT", chapters: 3 },
+            { id: 57, name: "Filemón", t: "NT", chapters: 1 },
+            { id: 58, name: "Hebreos", t: "NT", chapters: 13 },
+            { id: 59, name: "Santiago", t: "NT", chapters: 5 },
+            { id: 60, name: "1 Pedro", t: "NT", chapters: 5 },
+            { id: 61, name: "2 Pedro", t: "NT", chapters: 3 },
+            { id: 62, name: "1 Juan", t: "NT", chapters: 5 },
+            { id: 63, name: "2 Juan", t: "NT", chapters: 1 },
+            { id: 64, name: "3 Juan", t: "NT", chapters: 1 },
+            { id: 65, name: "Judas", t: "NT", chapters: 1 },
+            { id: 66, name: "Apocalipsis", t: "NT", chapters: 22 }
+        ];
+
+        function normalizarTexto(txt) {
+            return (txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        }
+
+        // --- GESTIÓN DE BIBLIA DESDE EL MÓVIL ---
+        async function cargarLibrosBiblicos() {
+            renderBibleBooks();
+        }
+
+        function filtrarLibrosRemoto(query) {
+            renderBibleBooks(query);
+        }
+
+        function renderBibleBooks(filtro = '') {
+            const container = document.getElementById('bible-container');
+            const title = document.getElementById('bible-step-title');
+            const backBtn = document.getElementById('btn-bible-back');
+            const searchBox = document.getElementById('bible-search-box');
+
+            if (title) title.innerText = '1. Selecciona un Libro';
+            if (backBtn) backBtn.classList.add('hidden');
+            if (searchBox) searchBox.style.display = 'flex';
+
+            container.className = 'bible-grid-grouped';
+            container.innerHTML = '';
+
+            const q = normalizarTexto(filtro);
+            const filteredBooks = q ? BIBLE_METADATA.filter(b => normalizarTexto(b.name).includes(q)) : BIBLE_METADATA;
+
+            if (filteredBooks.length === 0) {
+                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:2rem; font-size:0.85rem;">No se encontraron libros</div>';
+                return;
+            }
+
+            const atBooks = filteredBooks.filter(b => b.t === 'AT');
+            const ntBooks = filteredBooks.filter(b => b.t === 'NT');
+
+            if (atBooks.length > 0) {
+                const headerAT = document.createElement('div');
+                headerAT.className = 'bible-section-header';
+                headerAT.innerHTML = '<span style="color:#818cf8; font-weight:900; margin-right:0.35rem;">📜</span> Antiguo Testamento';
+                container.appendChild(headerAT);
+
+                atBooks.forEach(book => {
+                    const chip = document.createElement('div');
+                    chip.className = 'grid-chip';
+                    chip.innerText = book.name;
+                    chip.onclick = () => selectBookMobile(book.id, book.name);
+                    container.appendChild(chip);
+                });
+            }
+
+            if (ntBooks.length > 0) {
+                const headerNT = document.createElement('div');
+                headerNT.className = 'bible-section-header';
+                headerNT.innerHTML = '<span style="color:#a78bfa; font-weight:900; margin-right:0.35rem;">✝</span> Nuevo Testamento';
+                container.appendChild(headerNT);
+
+                ntBooks.forEach(book => {
+                    const chip = document.createElement('div');
+                    chip.className = 'grid-chip';
+                    chip.innerText = book.name;
+                    chip.onclick = () => selectBookMobile(book.id, book.name);
+                    container.appendChild(chip);
+                });
+            }
+        }
+
+        function selectBookMobile(bookId, bookName) {
+            selectedBibleBook = { id: bookId, name: bookName };
+            const container = document.getElementById('bible-container');
+            const title = document.getElementById('bible-step-title');
+            const backBtn = document.getElementById('btn-bible-back');
+            const searchBox = document.getElementById('bible-search-box');
+
+            if (title) title.innerText = `${bookName} - Elige Capítulo`;
+            if (backBtn) backBtn.classList.remove('hidden');
+            if (searchBox) searchBox.style.display = 'none';
+
+            container.className = 'bible-grid';
+            container.innerHTML = '';
+
+            const bookMeta = BIBLE_METADATA.find(b => b.id === bookId) || { chapters: 50 };
+            for (let c = 1; c <= bookMeta.chapters; c++) {
+                const chip = document.createElement('div');
+                chip.className = 'grid-chip';
+                chip.innerText = `Cap ${c}`;
+                chip.onclick = () => selectChapterMobile(c);
+                container.appendChild(chip);
+            }
+        }
+
+        function selectChapterMobile(capNum) {
+            selectedBibleChapter = capNum;
+            const container = document.getElementById('bible-container');
+            const title = document.getElementById('bible-step-title');
+            if (title) title.innerText = `${selectedBibleBook.name} ${capNum} - Elige Versículo`;
+
+            container.className = 'bible-grid';
+            container.innerHTML = '';
+            // Renderizar versículos 1-50
+            for (let v = 1; v <= 50; v++) {
+                const chip = document.createElement('div');
+                chip.className = 'grid-chip';
+                chip.innerText = `V. ${v}`;
+                chip.onclick = () => {
+                    sendAction({
+                        action: 'select_verse',
+                        book: selectedBibleBook.id,
+                        bookName: selectedBibleBook.name,
+                        chapter: selectedBibleChapter,
+                        verse: v
+                    });
+                    switchTab('control');
+                };
+                container.appendChild(chip);
+            }
+        }
+
+        function resetBibleSelector() {
+            selectedBibleBook = null;
+            selectedBibleChapter = null;
+            const searchInput = document.getElementById('bible-search-input');
+            if (searchInput) searchInput.value = '';
+            renderBibleBooks();
+        }
+
+        // --- GESTIÓN DE CANCIONES DESDE EL MÓVIL ---
+        async function cargarCatalogoCanciones() {
+            const container = document.getElementById('songs-list-container');
+            const res = await fetch('/api/remote/songs').catch(() => null);
+            if (res && res.ok) {
+                const data = await res.json();
+                allSongsCache = data.songs || [];
+                filtrarCancionesRemoto('');
+            }
+        }
+
+        function filtrarCancionesRemoto(query) {
+            const container = document.getElementById('songs-list-container');
+            if (!container) return;
+            const q = (query || '').toLowerCase().trim();
+            const filtered = q ? allSongsCache.filter(s => s.ti.toLowerCase().includes(q)) : allSongsCache.slice(0, 100);
+
+            container.innerHTML = '';
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#64748b; padding:1.5rem;">No se encontraron canciones</div>';
+                return;
+            }
+
+            filtered.forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:0.5rem;">${song.ti}</span>
+                    <span style="font-size:0.65rem; padding:0.15rem 0.4rem; border-radius:0.4rem; background:rgba(255,255,255,0.08); color:#818cf8; flex-shrink:0;">${song.tono || song.estilo}</span>
+                `;
+                item.onclick = async () => {
+                    // Cargar estrofas de la canción
+                    const songRes = await fetch(`/api/remote/song?title=${encodeURIComponent(song.ti)}`).catch(() => null);
+                    if (songRes && songRes.ok) {
+                        const songData = await songRes.json();
+                        mostrarEstrofasCancion(songData);
+                    } else {
+                        sendAction({ action: 'select_song', title: song.ti, verseIndex: 1 });
+                        switchTab('control');
+                    }
+                };
+                container.appendChild(item);
+            });
+        }
+
+        function mostrarEstrofasCancion(songData) {
+            renderQuickStanzas(songData.paragraphs.length, 1);
+            const container = document.getElementById('songs-list-container');
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <span style="font-weight:bold; color:#fbbf24; font-size:0.85rem; truncate;">${songData.title}</span>
+                    <button onclick="filtrarCancionesRemoto('')" style="background:transparent; border:none; color:#f43f5e; font-size:0.75rem; font-weight:bold; cursor:pointer;">« Lista</button>
+                </div>
+            `;
+            songData.paragraphs.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'list-item';
+                card.style.flexDirection = 'column';
+                card.style.alignItems = 'flex-start';
+                card.style.gap = '0.3rem';
+                card.innerHTML = `
+                    <div style="font-size:0.65rem; color:#818cf8; font-weight:bold;">ESTROFA ${idx + 1}</div>
+                    <div style="font-size:0.8rem; color:#f1f5f9; line-height:1.3;">${p.replace(/\n/g, '<br>')}</div>
+                `;
+                card.onclick = () => {
+                    sendAction({ action: 'select_song', title: songData.title, verseIndex: idx + 1 });
+                    renderQuickStanzas(songData.paragraphs.length, idx + 1);
+                    switchTab('control');
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            bindTouch('btn-next', 'ArrowDown');
+            bindTouch('btn-prev', 'ArrowUp');
+            bindTouch('btn-clear', 'Escape');
+            bindTouch('btn-black', 'KeyB');
+            bindTouch('btn-zoom-in', 'zoom_in');
+            bindTouch('btn-zoom-out', 'zoom_out');
+            bindTouch('btn-prev-bg', 'prev_bg');
+            bindTouch('btn-next-bg', 'next_bg');
+
+            initGlobalRemote();
+            fetchLiveStatus();
+            setInterval(fetchLiveStatus, 2000);
+        });
+    </script>
+</body>
+</html>
