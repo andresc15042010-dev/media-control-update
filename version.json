@@ -1,6 +1,6 @@
 {
-  "version": "2.2.0",
+  "version": "2.2.1",
   "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Media Control v2.2.0: Letra biblica y version al mismo tamano, solucion de congelamiento offline (cinta y fondos fluidos sin internet), control remoto con selector de adaptadores de red y USB tethering, interfaz ampliada con micro-animaciones y switch elegante de auto-proyeccion."
+  "notes": "Media Control v2.2.1: Zoom estilo navegador (Ctrl +, Ctrl -, Ctrl 0, Ctrl+Rueda) con ajuste perfecto a pantalla en 1366x768, reubicacion de switch de auto-proyeccion a cabecera de versiculos, aumento y sincronizacion en vivo de contorno de letras (hasta 16px), correcion ortografica en mayusculas/minusculas para tildes (á,é,í,ó,ú), ñ y dieresis (ü), boton Aa compacto en una sola linea y aviso limpio en copias de seguridad."
 }
