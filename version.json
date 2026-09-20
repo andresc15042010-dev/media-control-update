@@ -1,6 +1,6 @@
 {
   "version": "2.2.0",
-  "releaseDate": "2026-09-19",
+  "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Actualización oficial: Control remoto móvil 3.0 reparado con 2,776 canciones, proyección táctil de versículos y estrofas, tipografía de proyector ampliada a 4.8vw y descarga activa de memoria en carpetas de fondos."
+  "notes": "Media Control v2.2.0: Letra biblica y version al mismo tamano, solucion de congelamiento offline (cinta y fondos fluidos sin internet), control remoto con selector de adaptadores de red y USB tethering, interfaz ampliada con micro-animaciones y switch elegante de auto-proyeccion."
 }
