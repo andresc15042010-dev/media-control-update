@@ -1,6 +1,6 @@
 {
-  "version": "2.2.2",
+  "version": "2.2.3",
   "releaseDate": "2026-09-20",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Actualizacion v2.2.2: Margenes de pantalla de respeto, control de tamano de letra de proyeccion, tipografia ampliada de la app y Copias de Seguridad integradas."
+  "notes": "Actualizacion v2.2.3: Barra superior redisenada sin scrollbar, logo y version apilados, iconos ampliados, control de zoom minimalista sin letra A y paquete completo de micro-animaciones dedicadas."
 }
