@@ -1,6 +1,6 @@
 {
-  "version": "2.2.8",
+  "version": "2.2.9",
   "releaseDate": "2026-09-23",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Correccion de miniaturas de videos en fondos, scroll centrado en TLA y botones de notas compactos."
+  "notes": "Mejora canciones seleccionables, tamano notas compacto, soporte de miniaturas de video optimizadas y pestana de Vista Previa en control remoto."
 }
