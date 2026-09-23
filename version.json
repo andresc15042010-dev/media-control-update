@@ -1,6 +1,6 @@
 {
-  "version": "2.2.7",
-  "releaseDate": "2026-09-20",
+  "version": "2.2.8",
+  "releaseDate": "2026-09-23",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Actualización oficial 2.2.7: Tipografía Quicksand y zoom 200% por defecto con 1vw de márgenes, navegación y resaltado bíblico unificado, miniaturas de video optimizadas, botones de notas elegantes, control remoto equilibrado y QR único universal."
+  "notes": "Correccion de auto-proyeccion biblica, scroll automatico de versiculos, miniaturas de videos en fondos y QR universal unico para control remoto."
 }
