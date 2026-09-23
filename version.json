@@ -2,5 +2,5 @@
   "version": "2.2.8",
   "releaseDate": "2026-09-23",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Correccion de auto-proyeccion biblica, scroll automatico de versiculos, miniaturas de videos en fondos y QR universal unico para control remoto."
+  "notes": "Actualizacion completa: binario Electron incluido, correccion de auto-proyeccion, miniaturas de videos y QR universal unico."
 }
