@@ -145,6 +145,82 @@
             overflow: hidden;
         }
 
+        /* Pantalla de Vista Previa Real (16:9 Cinema Monitor) */
+        .stage-monitor-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(79, 70, 229, 0.25);
+            border: 2px solid rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .stage-monitor-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        .stage-monitor-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 2;
+        }
+        .stage-monitor-content {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .stage-monitor-title {
+            color: #fbbf24;
+            font-size: clamp(0.75rem, 3.5vw, 1.1rem);
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8);
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .stage-monitor-text {
+            color: #ffffff;
+            font-size: clamp(0.9rem, 4.5vw, 1.45rem);
+            font-weight: 700;
+            line-height: 1.35;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 3px 6px rgba(0,0,0,0.9);
+            max-height: 55%;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+        }
+        .stage-blackout-screen {
+            position: absolute;
+            inset: 0;
+            background: #000000;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
         /* Botones Táctiles */
         .btn-touch {
             border: none;
@@ -503,6 +579,7 @@
         <button class="tab-btn active" onclick="switchTab('control')">Control</button>
         <button class="tab-btn" onclick="switchTab('biblia')">Biblia</button>
         <button class="tab-btn" onclick="switchTab('canciones')">Canciones</button>
+        <button class="tab-btn" onclick="switchTab('preview')"><span style="color:#fbbf24;">📺</span> Vista Previa</button>
     </div>
 
     <!-- Monitor en Vivo (Visible en todas las pestañas) -->
@@ -600,6 +677,57 @@
         </div>
     </div>
 
+    <!-- PESTAÑA 4: VISTA PREVIA DEL PROYECTOR EN TIEMPO REAL -->
+    <div id="tab-preview" class="tab-pane" style="gap: 0.6rem; overflow-y: auto;">
+        <!-- Monitor 16:9 Simulador del Proyector Real -->
+        <div class="stage-monitor-container" id="stage-monitor">
+            <img id="stage-monitor-bg-img" class="stage-monitor-bg" src="" style="display:none;" alt="Fondo Pantalla">
+            <video id="stage-monitor-bg-video" class="stage-monitor-bg" src="" loop muted playsinline style="display:none;"></video>
+            <div class="stage-monitor-overlay"></div>
+            <div id="stage-blackout-box" class="stage-blackout-screen" style="display:none;">
+                <div style="text-align:center;">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 0.4rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                    <div>BLACKOUT ACTIVO</div>
+                </div>
+            </div>
+            <div class="stage-monitor-content">
+                <div id="stage-monitor-title" class="stage-monitor-title">Media Control Pro</div>
+                <div id="stage-monitor-text" class="stage-monitor-text">Proyector listo</div>
+            </div>
+        </div>
+
+        <!-- Controles Integrados en Vista Previa -->
+        <div class="controls-main" style="margin-top: 0.2rem;">
+            <button class="btn-touch btn-next" onclick="sendAction('ArrowDown')">
+                <span>Siguiente</span>
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <button class="btn-touch btn-prev" onclick="sendAction('ArrowUp')">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path></svg>
+                <span>Anterior</span>
+            </button>
+        </div>
+
+        <div class="quick-grid" style="margin-top: 0.2rem;">
+            <button class="btn-touch btn-mini btn-mini-danger" onclick="sendAction('Escape')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <span>Limpiar</span>
+            </button>
+            <button class="btn-touch btn-mini btn-mini-blackout" onclick="sendAction('KeyB')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                <span>Negro</span>
+            </button>
+            <button class="btn-touch btn-mini" onclick="sendAction('zoom_in')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Letra +</span>
+            </button>
+            <button class="btn-touch btn-mini" onclick="sendAction('zoom_out')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                <span>Letra -</span>
+            </button>
+        </div>
+    </div>
+
     <div class="footer-info">
         Control Remoto Móvil Oficial &bull; Media Control Pro
     </div>
@@ -692,8 +820,9 @@
                 const card = document.createElement('div');
                 card.className = 'bg-card-item';
                 if (bg.isVideo) {
+                    const thumbUrl = bg.thumb || '';
                     card.innerHTML = `
-                        <video src="${bg.url}" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+                        ${thumbUrl ? `<img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" alt="Miniatura">` : `<video src="${bg.url}" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`}
                         <span class="bg-card-badge">🎥 ${bg.name}</span>
                     `;
                 } else {
@@ -912,6 +1041,13 @@
             const textEl = document.getElementById('live-text');
             const card = document.getElementById('live-card');
 
+            // Elementos del monitor de Vista Previa
+            const stageTitle = document.getElementById('stage-monitor-title');
+            const stageText = document.getElementById('stage-monitor-text');
+            const stageBgImg = document.getElementById('stage-monitor-bg-img');
+            const stageBgVideo = document.getElementById('stage-monitor-bg-video');
+            const stageBlackout = document.getElementById('stage-blackout-box');
+
             if (st.isBlack) {
                 if (titleEl) titleEl.innerText = 'Pantalla en Negro';
                 if (textEl) textEl.innerHTML = '<span style="color:#f43f5e; font-weight:bold;">Proyección en pausa (Blackout)</span>';
@@ -919,8 +1055,11 @@
                     card.style.borderColor = 'rgba(244, 63, 94, 0.4)';
                     card.style.backgroundImage = 'none';
                 }
+                if (stageBlackout) stageBlackout.style.display = 'flex';
                 return;
             }
+
+            if (stageBlackout) stageBlackout.style.display = 'none';
 
             if (card) {
                 card.style.borderColor = 'rgba(99, 102, 241, 0.3)';
@@ -933,16 +1072,45 @@
                 }
             }
 
-            if (st.title || st.verse) {
-                if (titleEl) titleEl.innerText = st.title || st.verse || 'Proyección Activa';
+            // Renderizar fondo en Vista Previa
+            if (st.bg) {
+                const isVideo = /\.(mp4|webm|mov|mkv)($|\?)/i.test(st.bg);
+                if (isVideo) {
+                    if (stageBgImg) stageBgImg.style.display = 'none';
+                    if (stageBgVideo) {
+                        if (stageBgVideo.src !== st.bg) {
+                            stageBgVideo.src = st.bg;
+                            stageBgVideo.play().catch(() => {});
+                        }
+                        stageBgVideo.style.display = 'block';
+                    }
+                } else {
+                    if (stageBgVideo) {
+                        stageBgVideo.style.display = 'none';
+                        stageBgVideo.pause();
+                    }
+                    if (stageBgImg) {
+                        stageBgImg.src = st.bg;
+                        stageBgImg.style.display = 'block';
+                    }
+                }
             } else {
-                if (titleEl) titleEl.innerText = 'Media Control Pro';
+                if (stageBgVideo) { stageBgVideo.style.display = 'none'; stageBgVideo.pause(); }
+                if (stageBgImg) stageBgImg.style.display = 'none';
             }
 
-            if (st.text && st.text.trim()) {
-                if (textEl) textEl.innerText = st.text.trim();
+            const currentTitle = st.title || st.verse || '';
+            const currentContent = (st.text && st.text.trim()) ? st.text.trim() : '';
+
+            if (titleEl) titleEl.innerText = currentTitle || 'Media Control Pro';
+            if (stageTitle) stageTitle.innerText = currentTitle || 'Media Control Pro';
+
+            if (currentContent) {
+                if (textEl) textEl.innerText = currentContent;
+                if (stageText) stageText.innerText = currentContent;
             } else {
                 if (textEl) textEl.innerHTML = '<span style="color:#64748b;">Proyector listo</span>';
+                if (stageText) stageText.innerHTML = '<span style="color:#64748b; font-style:italic;">Proyector listo para transmitir</span>';
             }
 
             const activeIdx = parseInt(st.verseIndex || st.stanzaIndex || 0);
