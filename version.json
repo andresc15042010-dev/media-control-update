@@ -1,6 +1,6 @@
 {
-  "version": "2.2.9",
-  "releaseDate": "2026-09-23",
+  "version": "2.3.0",
+  "releaseDate": "2026-09-24",
   "downloadUrl": "https://github.com/andresc15042010-dev/media-control-update/releases",
-  "notes": "Mejora canciones seleccionables, tamano notas compacto, soporte de miniaturas de video optimizadas y pestana de Vista Previa en control remoto."
+  "notes": "Actualización oficial v2.3.0: Miniaturas nativas nítidas en todos los videos de fondos con caché de alto rendimiento, eliminación total de cuadros negros y carga instantánea."
 }
